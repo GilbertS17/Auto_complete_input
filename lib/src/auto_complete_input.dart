@@ -44,24 +44,30 @@ class _AutoCompleteInputState extends State<AutoCompleteInput> {
   }
 
   void _filter(String query) {
-    if (query.isEmpty) {
+    if (query.trim().isEmpty) {
       _filtered = [];
     } else {
-      final lowerQuery = query.toLowerCase();
+      // Normalize query: remove extra spaces and lowercase
+      final searchTerms = query
+          .trim()
+          .toLowerCase()
+          .split(RegExp(r'\s+')); // splits on 1+ spaces
 
       _filtered = widget.data.where((item) {
-        // 🔹 If searchFields is provided → use them
+        String searchable;
+
         if (widget.searchFields != null && widget.searchFields!.isNotEmpty) {
-          return widget.searchFields!.any((field) {
-            final value = item[field]?.toString().toLowerCase() ?? "";
-            return value.contains(lowerQuery);
-          });
+          // Concatenate values of searchFields
+          searchable = widget.searchFields!
+              .map((field) => item[field]?.toString() ?? "")
+              .join(" ")
+              .toLowerCase();
+        } else {
+          searchable = widget.displayBuilder(item).toLowerCase();
         }
 
-        // 🔹 Otherwise fallback to displayBuilder
-        final displayValue = widget.displayBuilder(item).toLowerCase();
-
-        return displayValue.contains(lowerQuery);
+        // Check that all terms exist in the searchable string (any order)
+        return searchTerms.every((term) => searchable.contains(term));
       }).toList();
     }
 
@@ -91,7 +97,7 @@ class _AutoCompleteInputState extends State<AutoCompleteInput> {
               child: Container(
                 constraints: BoxConstraints(
                   maxWidth: widget.config.maxWidth,
-                  maxHeight: widget.config.maxHeight,
+                  maxHeight: widget.config.suggestionMaxHeight,
                 ),
                 decoration: BoxDecoration(
                   color: widget.config.suggestionBgColor,
@@ -137,6 +143,7 @@ class _AutoCompleteInputState extends State<AutoCompleteInput> {
   Widget build(BuildContext context) {
     return SizedBox(
       width: widget.config.maxWidth,
+      height: widget.config.maxHeight,
       child: RawKeyboardListener(
         focusNode: FocusNode(),
         onKey: (event) {
@@ -149,9 +156,10 @@ class _AutoCompleteInputState extends State<AutoCompleteInput> {
           controller: _controller,
           focusNode: _focusNode,
           decoration: InputDecoration(
+            prefixIcon: widget.config.icon ?? null,
+            iconColor: Colors.red,
             hintText: _generateHint(),
             filled: widget.config.primaryColor != null,
-            fillColor: widget.config.primaryColor,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(
                   widget.config.borderRadius

@@ -8,7 +8,9 @@ class AutoCompleteConfig {
   final TextStyle? suggestionTextStyle;
   final double borderRadius;
   final double maxHeight;
+  final double suggestionMaxHeight;
   final double maxWidth;
+  final Icon? icon;
 
   const AutoCompleteConfig({
     this.primaryColor,
@@ -18,6 +20,8 @@ class AutoCompleteConfig {
     this.suggestionTextStyle,
     this.borderRadius = 12,
     this.maxWidth = double.infinity,
-    this.maxHeight = 250,
+    this.suggestionMaxHeight = 250,
+    this.maxHeight = 50,
+    this.icon,
   });
 }

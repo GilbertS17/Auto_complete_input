@@ -36,7 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
 
     final productsList = [
-      { 123: "P001", "Description": "iPhone 17", "qty": 5, "unitPrice": 920 },
+      { "productID": "P001", "Description": "iPhone 17", "qty": 5, "unitPrice": 920 },
       { "productID": "P002", "Description": "Samsung S26", "qty": 8, "unitPrice": 950 },
       { "productID": "P003", "Description": "Google Pixel 10", "qty": 12, "unitPrice": 899 },
       { "productID": "P004", "Description": "MacBook Air M4", "qty": 4, "unitPrice": 1199 },
@@ -83,6 +83,9 @@ class _MyHomePageState extends State<MyHomePage> {
           data: productsList,
           config: AutoCompleteConfig(
             maxWidth: 300,
+            maxHeight: 50,
+            suggestionMaxHeight: 300,
+            icon: Icon(Icons.search, color: Colors.indigo,)
           ),
         )
       ),
